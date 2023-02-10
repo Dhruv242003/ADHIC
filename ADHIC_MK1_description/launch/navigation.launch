@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<launch>
+<param name="robot_description" command="$(find xacro)/xacro $(find ADHIC_MK1_description)/urdf/ADHIC_MK1.xacro"/>
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model ADHIC_MK1"/>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+<arg name="model" default="$(find ADHIC_MK1_description)/urdf/ADHIC_MK1.xacro"/>
+  <arg name="gui" default="true"/>
+  <arg name="rvizconfig" default="$(find ADHIC_MK1_description)/launch/urdf.rviz"/>
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model)"/>
+  <param name="use_gui" value="$(arg gui)"/>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <node name="rviz" pkg="rviz" args="-d $(arg rvizconfig)" type="rviz" required="true"/>
+
+
+<node pkg="move_base" type="move_base" name="Base_move" output="screen">
+        <param name="controller_frequency" value="10.0" />
+        <rosparam file="$(find ADHIC_MK1_description)/config/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+        <rosparam file="$(find ADHIC_MK1_description)/config/costmap_common_params.yaml" command="load" ns="local_costmap"/>
+        <rosparam file="$(find ADHIC_MK1_description)/config/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find ADHIC_MK1_description)/config/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find ADHIC_MK1_description)/config/trajectory_planner.yaml" command="load" />
+      </node>
+
+
+
+</launch>
